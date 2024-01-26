@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>ManagerTasks</title>
+
+   <!-- Tailwind CSS -->
+   <script src="https://cdn.tailwindcss.com"></script>
+   
+
+   <!-- CSS -->
+   <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-neutral-700">
+   <main class="flex items-center justify-start mx-auto max-w-[95%] w-full min-w-[95%] py-6">
+      <!-- Menu Lateral -->
+      <nav class="fixed lg:relative w-[300px] min-w-[300px] max-w-[300px] min-h-screen rounded-2xl p-6 bg-neutral-50">
+         <!-- Header Menu -->
+         <div class="flex items-center justify-start space-x-3 mb-8">
+            <div class="min-w-[48px] w-12 h-12 flex items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
+               <i data-lucide="user-round" class="w-6 h-6"></i>
+            </div>
+            <div class="w-full">
+               <p>Olá, <span class="font-semibold">Usuário!</span></p>
+               <p class="text-neutral-500 text-xs">Seja Bem-Vindo</p>
+            </div>
+         </div>
+
+         <!-- Listas -->
+         <div class="w-full">
+            <!-- Título Seção -->
+            <div class="flex items-center justify-start space-x-2 text-xs">
+               <p>Suas Listas</p>
+               <p id="listsCounter" class="px-2.5 py-0.5 rounded font-semibold text-sky-500 bg-sky-500/10"></p>
+            </div>
+
+            <!-- Container Listas -->
+            <ul id="listsContainer" class="w-full mt-2 space-y-1"></ul>
+            
+            
+            <div class="w-full relative">
+               <!-- Adicionar Listas -->
+               <button 
+                  id="createListButton"
+                  class="flex items-center justify-between px-3 py-2 rounded-md bg-sky-500/10 hover:bg-sky-500 hover:text-white text-sky-500 h-10 transition-all duration-300 w-full mt-1"
+                  >
+                  <div class="flex items-center justify-start space-x-1 text-xs font-medium">
+                     <i data-lucide="plus" class="size-4"></i>
+                     <p>Criar Nova Lista</p>
+                  </div>
+                  <i data-lucide="chevron-right" class="size-4"></i>
+               </button>
+
+               <!-- Modal Criar / Editar Listas-->
+               <div 
+                  id="modalActionsLists" 
+                  class="absolute bg-white rounded-lg shadow-md top-0 -right-[250px] opacity-0 hidden z-10 p-3 space-y-4 transition-all duration-300"
+                  >
+                  <div class="flex items-center justify-between">
+                     <p class="text-sm text-neutral-700 font-medium">Criar nova Lista</p>
+                     <button id="closeModalActionsLists" class="rounded-md flex items-center justify-center">
+                        <i data-lucide="x" class="size-4 hover:text-sky-500 transition-all duration-200"></i>
+                     </button>
+                  </div>
+                  <div class="flex items-center justify-start relative">
+                     <div id="selectedColorList" class="rounded size-3.5 bg-neutral-500 absolute left-3"></div>
+                     <input 
+                        id="newListNameInput"
+                        type="text" 
+                        placeholder="Nome da Lista" 
+                        class="text-xs rounded-md min-w-[250px] h-9 border pl-9 pr-4 focus:border-sky-500 focus:outline-none transition-all duration-200" 
+                     />
+                     <input id="selectedColorListInput" value="neutral" type="hidden" />
+                  </div>
+                  <div class="flex items-center justify-start space-x-2.5 px-3">
+                     <button 
+                        onclick="document.getElementById('selectedColorListInput').value = 'red'; corNovaLista()" 
+                        class="size-3.5 rounded bg-red-400"></button>
+                     <button 
+                        onclick="document.getElementById('selectedColorListInput').value = 'yellow'; corNovaLista()" 
+                        class="size-3.5 rounded bg-yellow-400"></button>
+                     <button 
+                        onclick="document.getElementById('selectedColorListInput').value = 'green'; corNovaLista()" 
+                        class="size-3.5 rounded bg-green-400"></button>
+                     <button 
+                        onclick="document.getElementById('selectedColorListInput').value = 'sky'; corNovaLista()" 
+                        class="size-3.5 rounded bg-sky-400"></button>
+                     <button 
+                        onclick="document.getElementById('selectedColorListInput').value = 'indigo'; corNovaLista()" 
+                        class="size-3.5 rounded bg-indigo-400"></button>
+                  </div>
+                  <button 
+                     onclick="criarNovaLista()" 
+                     class="w-full flex items-center justify-center space-x-1.5 h-9 bg-neutral-100 text-neutral-500 rounded-md text-xs font-medium hover:bg-sky-500 hover:text-white transition-all duration-200"
+                     >
+                     <p>Criar Lista</p>
+                     <i data-lucide="plus-circle" class="size-3.5"></i>
+                  </button>
+               </div>
+            </div>
+
+         </div>
+      </nav>
+
+      <!-- Tarefas Container -->
+      <div id="tasksContainer" class="flex flex-col items-start justify-start min-h-screen p-8 w-full">
+         <!-- Título -->
+         <div class="flex items-center justify-start space-x-4 w-full mb-8 mt-14 lg:mt-0">
+            <h1 id="listTitle" class="text-4xl font-semibold">Trabalho</h1>
+            <div class="flex items-center justify-center border-2 border-sky-500 text-sky-500 px-4 py-0.5 rounded-md text-lg">
+               <p><span>3</span> Tarefas</p>
+            </div>
+         </div>
+
+         <!-- Botões de Ação -->
+         <div class="flex items-center justify-start space-x-3 w-full">
+            <button 
+               class="flex items-center justify-start px-4 py-3 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white transition-all duration-300 text-sm font-medium w-full rounded-lg space-x-1"
+               >
+               <i data-lucide="plus" class="w-5 h-5"></i>
+               <p>Adicionar Nova Tarefa</p>
+            </button>
+            <button 
+               class="flex items-center justify-center text-red-500 bg-red-500/10 hover:bg-red-500 hover:text-white px-4 py-3 transition-all duration-300 text-sm font-medium rounded-lg space-x-1 w-full min-w-[180px] max-w-[180px] "
+               >
+               <i data-lucide="trash" class="w-4 h-4"></i>
+               <p>Limpar Lista</p>
+            </button>
+         </div>
+
+         <!-- Lista de Tarefas -->
+         <ul class="flex items-start justify-start flex-col w-full mt-8">
+            <li class="flex items-center justify-between hover:bg-neutral-50 transition-all duration-300 py-2 px-3 rounded-lg w-full">
+               <button 
+                  onclick="document.getElementById('task-input').click()" 
+                  class="flex items-center justify-start space-x-2 focus:outline-none"
+                  >
+                  <div class="flex items-center justify-center">
+                     <i data-lucide="check" class="w-3 h-3 text-white absolute z-10 mt-[0.3px] stroke-[3]"></i>
+                     <input id="task-input" type="checkbox" class="w-4 h-4 appearance-none rounded-full border-2 border-neutral-400 checked:bg-sky-500 checked:border-transparent transition-all duration-100 hover:cursor-pointer"/>
+                  </div>
+                  <p>Nome da Tarefa 01</p>
+               </button>
+               <div class="flex items-center justify-end space-x-2">
+                  <!-- Deletar Tarefa-->
+                  <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-500/10 hover:bg-red-500 group transition-all duration-300">
+                     <i data-lucide="trash" class="w-4 h-4 text-red-500 group-hover:text-white transition-all duration-200"></i>
+                  </button>
+
+                  <!-- Editar Tarefa-->
+                  <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-sky-500/10 hover:bg-sky-500 group transition-all duration-300">
+                     <i data-lucide="pencil" class="w-4 h-4 text-sky-500 group-hover:text-white transition-all duration-200"></i>
+                  </button>
+               </div>
+            </li>
+         </ul>
+
+      </div>
+
+   </main>
+
+   <script src="script.js"></script>
+
+   <!-- Lucide Icons -->
+   <script src="https://unpkg.com/lucide@latest"></script>
+   <script>
+     lucide.createIcons();
+   </script>
+</body>
+</html>
