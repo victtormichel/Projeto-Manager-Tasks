@@ -3,35 +3,37 @@ let listas = [
    {
       id: 1,
       nomeLista: 'Trabalho',
-      corLista: 'red'
+      corLista: 'red',
+      tarefas: [
+         {
+            id: 1,
+            tituloTarefa: 'Tarefa Teste 01',
+            tarefaConcluida: false
+         },
+         {
+            id: 2,
+            tituloTarefa: 'Tarefa Teste 02',
+            tarefaConcluida: false
+         },
+      ],
+      tarefasQuantidade: 2
    },
    {
       id: 2,
       nomeLista: 'Casa',
-      corLista: 'yellow'
+      corLista: 'yellow',
+      tarefas: [
+         {
+            id: 1,
+            tituloTarefa: 'Tarefa Teste 01',
+            tarefaConcluida: false
+         },
+      ],
+      tarefasQuantidade: 1
    }
 ];
 
-let tarefas = [
-   {
-      id: 1,
-      idListaVinculada: 1,
-      tituloTarefa: 'Tarefa Teste 01',
-      tarefaConcluida: false
-   },
-   {
-      id: 2,
-      idListaVinculada: 1,
-      tituloTarefa: 'Tarefa Teste 02',
-      tarefaConcluida: false
-   },
-   {
-      id: 3,
-      idListaVinculada: 1,
-      tituloTarefa: 'Tarefa Teste 03',
-      tarefaConcluida: false
-   }
-];
+
 
 // Contador das Listas
 let listsCounter = 0;
@@ -39,6 +41,12 @@ let listsCounter = 0;
 const listCounterElement = document.querySelector('#listsCounter');
 // Elemento Container Listas
 const listsContainer = document.getElementById('listsContainer');
+// Elemento Container Tarefas
+const tasksContainer = document.getElementById('tasksContainer');
+// Elemento Container Lista Tarefas
+const tasksList = document.getElementById('tasksList');
+// Elemento Contador de Tarefas
+const tasksCounterElement = document.getElementById('counterTasksList');
 // Elemento Input Nome Nova Lista
 const listNameInputElement = document.getElementById('listNameInput');
 // Elemento Input Cor Nova Lista
@@ -54,7 +62,7 @@ const listItemElement = function (lista) {
          <div 
             class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-neutral-100 h-10 transition-all duration-300"
             >
-            <button class="flex items-center justify-start w-full space-x-2">
+            <button onclick="renderizarDetalhesLista(${lista.id})" class="flex items-center justify-start w-full space-x-2">
                <div id="list${lista.id}ColorElement" class="w-4 h-4 rounded bg-${lista.corLista}-400"></div>
                <p id="list${lista.id}NameElement" class="font-medium text-xs">${lista.nomeLista}</p>
             </button>
@@ -115,9 +123,37 @@ const listItemElement = function (lista) {
    `;
 }
 
+const taskItemElement = function (tarefa) {
+   return  `
+      <li class="flex items-center justify-between hover:bg-neutral-50 transition-all duration-300 py-2 px-3 rounded-lg w-full">
+         <button 
+            onclick="document.getElementById('task-input').click()" 
+            class="flex items-center justify-start space-x-2 focus:outline-none"
+            >
+            <div class="flex items-center justify-center">
+               <i data-lucide="check" class="w-3 h-3 text-white absolute z-10 mt-[0.3px] stroke-[3]"></i>
+               <input id="task-input" type="checkbox" class="w-4 h-4 appearance-none rounded-full border-2 border-neutral-400 checked:bg-sky-500 checked:border-transparent transition-all duration-100 hover:cursor-pointer"/>
+            </div>
+            <p>Nome da Tarefa 01</p>
+         </button>
+         <div class="flex items-center justify-end space-x-2">
+            <!-- Deletar Tarefa-->
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-500/10 hover:bg-red-500 group transition-all duration-300">
+               <i data-lucide="trash" class="w-4 h-4 text-red-500 group-hover:text-white transition-all duration-200"></i>
+            </button>
+
+            <!-- Editar Tarefa-->
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-sky-500/10 hover:bg-sky-500 group transition-all duration-300">
+               <i data-lucide="pencil" class="w-4 h-4 text-sky-500 group-hover:text-white transition-all duration-200"></i>
+            </button>
+         </div>
+      </li>
+   `
+}
+
 // Funções
 function renderizarListasTarefas() {
-   // Limpando Listas caso haja alguma no dom
+   // Limpando Listas caso haja alguma no DOM
    listsContainer.innerHTML = "";
 
    // Iniciando Contador das Listas
@@ -129,6 +165,23 @@ function renderizarListasTarefas() {
       (lista) => {
          return listItemElement(lista)
       }
+   ).join('');
+
+}
+
+function renderizarTarefas(idLista) {
+   // Limpando Tarefas caso haja alguma no DOM
+   tasksList.innerHTML = "";
+
+   // Iniciando Contador de Tarefas
+   tasksCounter = listas[idLista - 1].tarefas.length;
+   tasksCounterElement.innerHTML = tasksCounter;
+
+   // Renderizando Tarefas
+   tasksList.innerHTML = listas[idLista - 1].tarefas.map (
+      (tarefa) => {
+         return taskItemElement(tarefa)
+      }      
    ).join('');
 
 }
@@ -174,6 +227,12 @@ function criarNovaLista() {
 
    // Renderiza as Listas Novamente
    renderizarListasTarefas();
+
+}
+
+function criarNovaTarefa(id) {
+   const idNovaTarefa = listas[id - 1].tarefas.id;
+   const tarefaNovaNome = `Tarefa ${ listas[id - 1].tarefas.length + 1 }`;
 
 }
 
@@ -252,21 +311,23 @@ function trocarCorLista() {
 
 }
 
+function renderizarDetalhesLista(id) {
 
+   const listaObjeto = listas[id - 1]
+   document.getElementById('listTitle').innerHTML = listaObjeto.nomeLista
+
+   const tarefasContainer = document.getElementById('tasksContainer')
+   tarefasContainer.classList.remove('opacity-0', '-translate-x-5')
+
+   document.getElementById("createTaskButton").setAttribute("onclick", `criarNovaTarefa(${id})`);
+   document.getElementById("clearListTaskButton").setAttribute("onclick", `limparTarefa(${id})`);
+
+   renderizarTarefas(id)
+
+}
 
 // Renderizando listas
 document.addEventListener('DOMContentLoaded', () => {
    // Chamando função de rendização das listas de tarefas no carregamento da pag.
    renderizarListasTarefas();
 });
-
-// Botão abrir modal de criação de listas
-document.getElementById('createListButton').addEventListener('click', () => {
-   mostrarModalCriarLista();
-});
-
-// Botão fechar modal de criação de listas
-document.getElementById('closeModalActionsLists').addEventListener('click', () => {
-   fecharModalCriarLista();
-});
-
