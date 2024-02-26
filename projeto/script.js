@@ -174,8 +174,7 @@ function renderizarTarefas(idLista) {
    tasksList.innerHTML = "";
 
    // Iniciando Contador de Tarefas
-   tasksCounter = listas[idLista - 1].tarefas.length;
-   tasksCounterElement.innerHTML = tasksCounter;
+   tasksCounter = listas[idLista - 1].tarefasQuantidade;
 
    // Renderizando Tarefas
    tasksList.innerHTML = listas[idLista - 1].tarefas.map (
@@ -220,7 +219,7 @@ function criarNovaLista() {
    const corListaNova = document.getElementById('selectedColorListInput').value;
 
    // Adiciona a Lista na Array
-   listas.push({ id: idListaNova , nomeLista: listaNovaNome, corLista: corListaNova });
+   listas.push({ id: idListaNova , nomeLista: listaNovaNome, corLista: corListaNova, tarefas: [], tarefasQuantidade: 0 });
 
    // Fecha o Modal e recarrega as listas no DOM
    fecharModalCriarLista();
