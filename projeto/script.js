@@ -172,9 +172,10 @@ function renderizarListasTarefas() {
 function renderizarTarefas(idLista) {
    // Limpando Tarefas caso haja alguma no DOM
    tasksList.innerHTML = "";
-
+   
    // Iniciando Contador de Tarefas
    tasksCounter = listas[idLista - 1].tarefasQuantidade;
+   tasksCounterElement.innerText = tasksCounter;
 
    // Renderizando Tarefas
    tasksList.innerHTML = listas[idLista - 1].tarefas.map (
